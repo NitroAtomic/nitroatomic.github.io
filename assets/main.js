@@ -2,6 +2,10 @@
 (function () {
   var root = document.documentElement;
 
+  // Marks that JS is alive. CSS only hides scroll-reveal content when this is set,
+  // so a JS failure degrades to "everything visible" instead of a blank page.
+  root.classList.add('js');
+
   // --- theme ---
   // Dark is the default look. Swap 'dark' for 'light' below to flip the default.
   var saved = null;
@@ -61,6 +65,77 @@
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     items.forEach(function (el) { io.observe(el); });
 
+    var calmMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // --- stat numbers count up when they scroll into view ---
+    var nums = document.querySelectorAll('.stat .num');
+    if (nums.length && !calmMotion) {
+      // Blank them here rather than in the observer callback, so the real value
+      // never flashes on screen before the count starts.
+      nums.forEach(function (n) {
+        var raw = n.textContent.trim();
+        if (!parseInt(raw.replace(/\D/g, ''), 10)) return;
+        n.dataset.final = raw;
+        n.textContent = '0' + raw.replace(/[\d]/g, '');
+      });
+
+      var countIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          countIO.unobserve(e.target);
+          var el = e.target;
+          var raw = el.dataset.final;
+          if (!raw) return;
+          var target = parseInt(raw.replace(/\D/g, ''), 10);
+          var suffix = raw.replace(/[\d]/g, '');   // keeps things like a trailing "+"
+          var dur = 1100, t0 = null;
+
+          // A small target only has a handful of integer steps. With a hard ease-out
+          // it hits its final value a third of the way in and then sits there while
+          // the four-digit tiles are still spinning, which reads as broken. Small
+          // numbers therefore ramp linearly so every tile lands together.
+          var gentle = target <= 20;
+
+          function step(ts) {
+            if (t0 === null) t0 = ts;
+            var p = Math.min((ts - t0) / dur, 1);
+            var eased = gentle ? p : 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(target * eased) + suffix;
+            if (p < 1) requestAnimationFrame(step);
+            else el.textContent = raw;             // land exactly on the original string
+          }
+          requestAnimationFrame(step);
+        });
+      }, { threshold: 0.6 });
+      nums.forEach(function (n) { countIO.observe(n); });
+
+      // Safety net: if a tile somehow never crosses the threshold (odd viewport,
+      // observer never fires), restore the real number rather than leaving a 0.
+      setTimeout(function () {
+        nums.forEach(function (n) {
+          if (n.dataset.final && n.textContent.trim() === '0' + n.dataset.final.replace(/[\d]/g, '')) {
+            n.textContent = n.dataset.final;
+          }
+        });
+      }, 4000);
+    }
+
+    // --- skill tags flip in one by one ---
+    var tagLists = document.querySelectorAll('.tags');
+    if (!calmMotion) {
+      var tagIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          tagIO.unobserve(e.target);
+          e.target.classList.add('stagger');
+          [].forEach.call(e.target.children, function (li, i) {
+            li.style.animationDelay = (i * 45) + 'ms';
+          });
+        });
+      }, { threshold: 0.2 });
+      tagLists.forEach(function (l) { tagIO.observe(l); });
+    }
+
     // --- portrait tilt + sheen (pointer devices only) ---
     var card = document.querySelector('.portrait');
     var wrap = document.querySelector('.portrait-wrap');
@@ -99,6 +174,157 @@
         card.style.removeProperty('--gx');
         card.style.removeProperty('--gy');
       });
+    }
+
+    // ===================== UI ANIMATION LAYER =====================
+    if (!calmMotion) {
+
+      // --- scroll progress bar + nav compact + back-to-top ---
+      var bar = document.createElement('div');
+      bar.className = 'progress';
+      document.body.appendChild(bar);
+
+      var top = document.createElement('button');
+      top.className = 'to-top';
+      top.setAttribute('aria-label', 'Back to top');
+      top.textContent = '↑';
+      top.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      document.body.appendChild(top);
+
+      var nav = document.querySelector('.nav');
+      var ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          ticking = false;
+          var max = document.documentElement.scrollHeight - window.innerHeight;
+          var y = window.scrollY;
+          bar.style.transform = 'scaleX(' + (max > 0 ? y / max : 0) + ')';
+          if (nav) nav.classList.toggle('compact', y > 40);
+          top.classList.toggle('show', y > 600);
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // --- cursor spotlight across cards ---
+      var lit = document.querySelectorAll('.card, .project');
+      lit.forEach(function (el) {
+        var f = null;
+        el.addEventListener('mousemove', function (e) {
+          if (f) return;
+          f = requestAnimationFrame(function () {
+            f = null;
+            var r = el.getBoundingClientRect();
+            el.style.setProperty('--mx', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
+            el.style.setProperty('--my', (((e.clientY - r.top) / r.height) * 100).toFixed(1) + '%');
+          });
+        });
+        el.addEventListener('mouseenter', function () { el.classList.add('lit'); });
+        el.addEventListener('mouseleave', function () { el.classList.remove('lit'); });
+      });
+
+      // --- hero headline rises word by word ---
+      var h1 = document.querySelector('.hero h1');
+      if (h1) {
+        var html = h1.innerHTML;
+        // split on spaces but keep the <span class="accent"> wrapper intact
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        var out = '';
+        [].forEach.call(tmp.childNodes, function (n) {
+          if (n.nodeType === 3) {
+            n.textContent.split(/(\s+)/).forEach(function (w) {
+              out += /^\s+$/.test(w) ? w : (w ? '<span>' + w + '</span>' : '');
+            });
+          } else {
+            out += '<span>' + n.outerHTML + '</span>';
+          }
+        });
+        h1.innerHTML = out;
+        h1.classList.add('rise');
+        [].forEach.call(h1.querySelectorAll(':scope > span'), function (s, i) {
+          s.style.animationDelay = (80 + i * 90) + 'ms';
+        });
+      }
+    }
+
+
+    // --- matrix rain backdrop ---
+    if (!calmMotion) {
+      var cv = document.createElement('canvas');
+      cv.id = 'matrix';
+      cv.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(cv);
+      var ctx = cv.getContext('2d');
+
+      var GLYPHS = 'アカサタナハマヤラワィゥヴカ0123456789ABCDEF<>[]{}/\\|=+*#$%'.split('');
+      // wider spacing and a lower frame rate on phones: fewer columns, less battery
+      var small = innerWidth < 640;
+      var FONT = small ? 20 : 16, cols = 0, drops = [], speeds = [], dpr = 1;
+
+      function accent() {
+        var c = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+        return c || '#38bdf8';
+      }
+
+      function size() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        cv.width = Math.floor(innerWidth * dpr);
+        cv.height = Math.floor(innerHeight * dpr);
+        cv.style.width = innerWidth + 'px';
+        cv.style.height = innerHeight + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        cols = Math.ceil(innerWidth / FONT);
+        drops = []; speeds = [];
+        for (var i = 0; i < cols; i++) {
+          drops.push(Math.random() * -60);              // stagger the start so it does not fall as one wall
+          speeds.push(0.35 + Math.random() * 0.55);     // per-column speed keeps it from looking mechanical
+        }
+      }
+
+      var fade = 'rgba(10, 13, 19, 0.09)';
+      function refreshFade() {
+        var bg = getComputedStyle(document.body).backgroundColor.match(/\d+/g) || [10, 13, 19];
+        fade = 'rgba(' + bg[0] + ',' + bg[1] + ',' + bg[2] + ',0.09)';
+      }
+
+      var last = 0, FPS = small ? 15 : 24;
+      function frame(ts) {
+        requestAnimationFrame(frame);
+        if (document.hidden) return;                    // stop burning CPU on a background tab
+        if (ts - last < 1000 / FPS) return;
+        last = ts;
+
+        ctx.fillStyle = fade;                           // translucent wash leaves the trails behind
+        ctx.fillRect(0, 0, innerWidth, innerHeight);
+        ctx.font = FONT + 'px ' + (getComputedStyle(document.body).getPropertyValue('--mono') || 'monospace');
+
+        var col = accent();
+        for (var i = 0; i < cols; i++) {
+          var ch = GLYPHS[(Math.random() * GLYPHS.length) | 0];
+          var y = drops[i] * FONT;
+          if (y > 0) {
+            ctx.fillStyle = col;                        // bright head of the column
+            ctx.globalAlpha = 0.85;
+            ctx.fillText(ch, i * FONT, y);
+            ctx.globalAlpha = 0.35;                     // dimmer character just behind it
+            ctx.fillText(GLYPHS[(Math.random() * GLYPHS.length) | 0], i * FONT, y - FONT);
+            ctx.globalAlpha = 1;
+          }
+          drops[i] += speeds[i];
+          if (y > innerHeight && Math.random() > 0.975) drops[i] = Math.random() * -20;
+        }
+      }
+
+      size(); refreshFade();
+      addEventListener('resize', function () { size(); refreshFade(); }, { passive: true });
+      var tgl = document.querySelector('.theme-toggle');
+      if (tgl) tgl.addEventListener('click', function () { setTimeout(refreshFade, 350); });
+      requestAnimationFrame(frame);
     }
 
     // --- typed role line ---
