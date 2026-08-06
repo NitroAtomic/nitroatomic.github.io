@@ -1,4 +1,4 @@
-/* Theme toggle + scroll reveal + active nav */
+/* Scroll reveal, active nav, matrix rain and the UI animation layer */
 (function () {
   var root = document.documentElement;
 
@@ -6,28 +6,7 @@
   // so a JS failure degrades to "everything visible" instead of a blank page.
   root.classList.add('js');
 
-  // --- theme ---
-  // Dark is the default look. Swap 'dark' for 'light' below to flip the default.
-  var saved = null;
-  try { saved = window.__theme || null; } catch (e) {}
-  root.setAttribute('data-theme', saved || 'dark');
-
-  function paint(btn) {
-    if (btn) btn.textContent = root.getAttribute('data-theme') === 'light' ? '☽' : '☀';
-  }
-
   document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.querySelector('.theme-toggle');
-    paint(btn);
-    if (btn) {
-      btn.addEventListener('click', function () {
-        var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        root.setAttribute('data-theme', next);
-        window.__theme = next;
-        paint(btn);
-      });
-    }
-
     // --- active nav link ---
     var here = location.pathname.split('/').pop() || 'index.html';
     document.querySelectorAll('.nav-links a[href]').forEach(function (a) {
@@ -266,8 +245,8 @@
       var small = innerWidth < 640;
       var FONT = small ? 20 : 16, cols = 0, drops = [], speeds = [], dpr = 1;
 
-      function accent() {
-        var c = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+      function rainColor() {
+        var c = getComputedStyle(document.documentElement).getPropertyValue('--matrix').trim();
         return c || '#38bdf8';
       }
 
@@ -286,10 +265,13 @@
         }
       }
 
-      var fade = 'rgba(10, 13, 19, 0.09)';
+      // Erase old trails instead of painting the background colour over them.
+      // Painting white each frame left a grey haze on the light theme; wiping with
+      // destination-out keeps the canvas genuinely transparent so the page shows through.
+      var fadeAlpha = 0.09;
       function refreshFade() {
-        var bg = getComputedStyle(document.body).backgroundColor.match(/\d+/g) || [10, 13, 19];
-        fade = 'rgba(' + bg[0] + ',' + bg[1] + ',' + bg[2] + ',0.09)';
+        fadeAlpha = parseFloat(getComputedStyle(document.documentElement)
+                     .getPropertyValue('--matrix-fade')) || 0.09;
       }
 
       var last = 0, FPS = small ? 15 : 24;
@@ -299,11 +281,13 @@
         if (ts - last < 1000 / FPS) return;
         last = ts;
 
-        ctx.fillStyle = fade;                           // translucent wash leaves the trails behind
+        ctx.globalCompositeOperation = 'destination-out';   // wipe, do not paint
+        ctx.fillStyle = 'rgba(0,0,0,' + fadeAlpha + ')';
         ctx.fillRect(0, 0, innerWidth, innerHeight);
+        ctx.globalCompositeOperation = 'source-over';
         ctx.font = FONT + 'px ' + (getComputedStyle(document.body).getPropertyValue('--mono') || 'monospace');
 
-        var col = accent();
+        var col = rainColor();
         for (var i = 0; i < cols; i++) {
           var ch = GLYPHS[(Math.random() * GLYPHS.length) | 0];
           var y = drops[i] * FONT;
@@ -322,8 +306,6 @@
 
       size(); refreshFade();
       addEventListener('resize', function () { size(); refreshFade(); }, { passive: true });
-      var tgl = document.querySelector('.theme-toggle');
-      if (tgl) tgl.addEventListener('click', function () { setTimeout(refreshFade, 350); });
       requestAnimationFrame(frame);
     }
 

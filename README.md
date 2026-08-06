@@ -1,6 +1,6 @@
 # Juan Paolo Dente, Personal Site
 
-A single-page static portfolio. No build step, no frameworks, no dependencies. Just open
+A single-page static portfolio in a black-and-green Matrix theme. No build step, no frameworks, no dependencies. Just open
 `index.html` in a browser to preview it locally.
 
 ```
@@ -8,7 +8,7 @@ site/
 ├── index.html              ← the whole site (hero, about, projects, experience, education, skills, contact)
 ├── assets/
 │   ├── style.css           ← all styling (colours live at the top)
-│   ├── main.js             ← theme toggle, scroll animations, typing effect
+│   ├── main.js             ← matrix rain, scroll animations, typing effect
 │   ├── juan.png            ← your profile photo (transparent cut-out)
 │   ├── se-aware.jpg        ← SE Aware project screenshot
 │   └── favicon.png         ← browser tab icon
@@ -63,6 +63,8 @@ by clicking the pencil icon on any file.
 | Certifications + verify links | `index.html`, the `<ul class="cert-list">` in `#skills` |
 | Email, LinkedIn, socials | `index.html`, the `#contact` section, **and** the footer |
 | Colours | `assets/style.css`, the `:root` block at the very top |
+| Matrix rain colour | `--matrix` in that same `:root` block |
+| How long the rain trails are | `--matrix-fade`. Higher number = shorter tails |
 
 ---
 
@@ -80,10 +82,12 @@ To use a **framed** photo instead (a rectangle with a background baked in):
 
 ## Notes
 
-- **Dark/light toggle** is the ☀/☽ button in the nav. It resets when you navigate between
-  pages. To make it remember the user's choice, open `assets/main.js` and swap the two
-  `window.__theme` lines for `localStorage.getItem('theme')` and
-  `localStorage.setItem('theme', next)`.
+- **One theme only.** The light mode and its toggle were removed. Everything is driven
+  by the `:root` variables in `style.css`, so changing `--bg`, `--text` and `--accent`
+  re-skins the whole site.
+- **The matrix rain** is a canvas drawn in `main.js`. It runs at 24fps on desktop and
+  15fps on phones, pauses when the tab is in the background, and is removed entirely
+  for anyone with reduced motion enabled.
 - **Custom domain:** both Netlify and GitHub Pages support them for free (you just pay for
   the domain itself, roughly 500 to 900 pesos a year). Netlify: *Domain settings → Add custom domain*.
   GitHub Pages: *Settings → Pages → Custom domain*.
