@@ -447,6 +447,16 @@ section + section { padding-top: 0; }
 }
 .check { color: var(--accent); flex-shrink: 0; }
 
+/* credential badge sits at the left of a row, in place of the tick */
+.cert-list li.with-badge { align-items: center; }
+.cert-list .badge {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+  margin: 2px 0 2px -4px;
+}
+
 /* verification links sit at the far right of each credential row */
 .cert-list .verify {
   font-family: var(--mono);
