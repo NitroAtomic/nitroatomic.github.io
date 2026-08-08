@@ -61,7 +61,7 @@
     <div class="stats">
       <div class="card stat reveal"><div class="num">2013</div><div class="label">In IT since</div></div>
       <div class="card stat reveal"><div class="num">5</div><div class="label">Roles held</div></div>
-      <div class="card stat reveal"><div class="num">7</div><div class="label">Certifications</div></div>
+      <div class="card stat reveal"><div class="num">8</div><div class="label">Certifications</div></div>
       <div class="card stat reveal"><div class="num">2024</div><div class="label">BSIT in progress</div></div>
     </div>
   </div>
@@ -75,9 +75,9 @@
     <div class="grid-2" style="margin-top:26px; align-items:start;">
       <div>
         <p class="lead">
-          I started in 2013 doing remote desktop support at PeoplePlusTech, fixing customer
-          machines I never physically touched. From there to store IT at Forever 21, then Tier 1
-          and Tier 2 service desk work at Accenture, and now records, documentation and technical
+          I started in 2013 as a Geek Squad remote agent, fixing customer machines I never
+          physically touched. From there to Forever 21, supporting their stores worldwide from Manila,
+          then Tier 1 and Tier 2 service desk work at Accenture, and now records, documentation and technical
           support for the Planning &amp; Design Section at DPWH Capiz 1st DEO.
         </p>
         <p class="lead">
@@ -206,6 +206,67 @@ state = (stop, route currently aboard)
 
 
     <!-- ---------- smaller projects ---------- -->
+    <article class="project" style="margin-top:26px;">
+      <div class="project-body">
+        <div class="project-kicker">Windows · PowerShell · Running on a real machine</div>
+        <h3>Agent Juan Toolkit</h3>
+        <p class="project-tagline">The tech&rsquo;s bench, in one window.</p>
+        <p>
+          A single PowerShell script that opens as a dashboard of 29 one-click fixes for the
+          problems a service desk sees every day, across networking, system repair, printing,
+          diagnostics and security. Winsock and TCP/IP resets, DNS flush, hosts file restore,
+          SFC and DISM, Windows Update repair, print spooler recovery, SMART disk health,
+          pending reboot checks and a failed sign-in audit.
+        </p>
+        <p>
+          The design decisions are the interesting part. Every fix is a <em>documented Windows
+          command</em>, nothing third-party and nothing bundled, so the tool is auditable by
+          anyone who knows Windows. Every card confirms before it runs. The hosts file reset
+          aborts rather than proceed if its backup fails.
+        </p>
+        <p>
+          The rule the whole thing is built on: <strong>the log never claims success it has not
+          verified.</strong> Every action captures the command&rsquo;s real exit code and output
+          and reports what actually happened, and several go further and check the world
+          instead of the exit code. Renew IP reads back the address you ended up holding and
+          flags a self-assigned one. The connectivity test separates a dead link from a DNS
+          fault. That matters because the person reading the log is deciding whether to stop
+          troubleshooting.
+        </p>
+        <p>
+          <em>Collect for Ticket</em> gathers what a ticket always asks for, down to the serial
+          number for warranty lookup, and writes it to a file. The session log writes itself to
+          disk from launch, so the record of what was done to a machine survives even if the
+          window is closed mid-repair.
+        </p>
+        <p>
+          Alongside the fixes sits a <strong>knowledge base of 24 Windows faults</strong>, and
+          one search box queries both. Type <code>0x80073712</code> and you get the component
+          store article plus the DISM card it tells you to press. Type <code>printer offline</code>
+          or <code>temporary profile</code> and you get symptoms, the real cause, and numbered
+          steps ordered cheapest and most likely first. Reading an article writes it to the same
+          log, so what was looked up is recorded next to what was run.
+        </p>
+
+        <div class="shot-row wide">
+          <figure>
+            <img src="assets/toolkit-dashboard.jpg" alt="Agent Juan Toolkit dashboard showing fix cards for processes, hardware report, connectivity, startup programs, speed test, disk check and cleanup, with a timestamped activity log below" loading="lazy">
+            <figcaption>Every fix is a card with a description, tags and a confirmation step. The log below is exportable.</figcaption>
+          </figure>
+        </div>
+
+        <ul class="tags" style="margin:18px 0 20px;">
+          <li>PowerShell</li>
+          <li>Windows Forms</li>
+          <li>UAC Elevation</li>
+          <li>netsh / sfc / dism</li>
+          <li>WMI / CIM</li>
+          <li>Event Log</li>
+          <li>Knowledge Base</li>
+        </ul>
+      </div>
+    </article>
+
     <div class="project-grid">
 
       <article class="project compact">
@@ -324,26 +385,32 @@ state = (stop, route currently aboard)
         <div class="tl-meta">Jul 2018 to Feb 2020</div>
         <h3>IT Service Desk Analyst</h3>
         <div class="tl-org">Accenture Philippines</div>
-        <p>Delivered Tier 1 and Tier 2 technical support, managed incident tickets through to
-           resolution, and supported desktop operating systems, business applications and POS systems.</p>
+        <p>Delivered Tier 1 and Tier 2 support to store sites across multiple regions and time
+           zones, managing incident tickets through to resolution and supporting PC hardware,
+           desktop operating systems, business applications, peripherals and POS systems.
+           Coordinated with vendors on replacement parts, dispatched field technicians, and wrote
+           knowledge base articles so recurring issues could be closed at first contact.</p>
       </div>
 
       <div class="tl-item past">
         <div class="tl-meta">Sep 2016 to Jun 2018</div>
         <h3>IT Store Support</h3>
-        <div class="tl-org">Forever 21</div>
-        <p>Diagnosed hardware and software issues on-site, supported POS systems, and kept store
-           IT operations running through peak retail hours.</p>
+        <div class="tl-org">Forever 21 · Pasay City · global store support</div>
+        <p>Supported Forever 21 stores worldwide from the Manila hub, diagnosing hardware and
+           software faults, maintaining POS terminals, and keeping store IT running through peak
+           retail hours across multiple time zones.</p>
       </div>
 
       <div class="tl-item past">
-        <div class="tl-meta">Jul 2013 to Jan 2016</div>
+        <div class="tl-meta">Jun 2013 to Jan 2016</div>
         <h3>Remote Desktop Specialist</h3>
-        <div class="tl-org">PeoplePlusTech Inc. · Makati City · On-site</div>
+        <div class="tl-org">PeoplePlusTech Inc. · deployed to Accenture, Geek Squad account · Makati City</div>
         <p>Performed advanced software repair, installations and virus removal on customer
            machines through remote service tools. Analysed, diagnosed and resolved client
            problems, logged and tracked issues to closure, and escalated what needed a
-           specialist. Worked to defined SLAs in a team environment.</p>
+           specialist. Appointed Tech Lead for a small group of new agents, taking their
+           escalations and coaching them through resolution. Worked to defined SLAs in a
+           team environment.</p>
       </div>
 
     </div>
@@ -394,7 +461,10 @@ state = (stop, route currently aboard)
       <li>Network Troubleshooting</li>
       <li>System Re-imaging &amp; Reformatting</li>
       <li>IT Documentation</li>
-      <li>Ticketing Systems</li>
+      <li>ServiceNow</li>
+      <li>Jira</li>
+      <li>LogMeIn Rescue</li>
+      <li>Citrix</li>
       <li>SLA-driven Support</li>
       <li>Microsoft Office &amp; Outlook Configuration</li>
       <li>Cybersecurity Fundamentals</li>
@@ -452,6 +522,12 @@ state = (stop, route currently aboard)
             <small>with 2-hour Training of Trainers</small></span>
           <span class="issuer">DOLE-accredited · Feb 2026</span>
           <span class="verify muted-code">B10215-017</span>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <span class="cert-name">Computer Hardware Servicing NC II</span>
+          <span class="issuer">TESDA · Sep 2011</span>
+          <span class="verify muted-code">NC II</span>
         </li>
       </ul>
     </div>
