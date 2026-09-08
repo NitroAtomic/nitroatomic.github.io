@@ -1,21 +1,50 @@
-# Juan Paolo Dente, Personal Site
+# Juan Paolo Dente, Personal Site (3D edition)
 
-A single-page static portfolio in a black-and-green Matrix theme. No build step, no frameworks, no dependencies. Just open
-`index.html` in a browser to preview it locally.
+Your original site — frameless portrait, aurora glow, cursor spotlight, count-up stats,
+scroll-drawn timeline — now with real WebGL 3D layered in. No build step, no framework.
+Open `index.html` in a browser to preview, or serve the folder with any static host.
 
 ```
 site/
-├── index.html              ← the whole site (hero, about, projects, experience, education, skills, contact)
+├── index.html            ← the whole site
 ├── assets/
-│   ├── style.css           ← all styling (colours live at the top)
-│   ├── main.js             ← matrix rain, scroll animations, typing effect
-│   ├── juan.png            ← your profile photo (transparent cut-out)
-│   ├── se-aware.jpg        ← SE Aware project screenshot
-│   └── favicon.png         ← browser tab icon
-└── README.md               ← this file
+│   ├── style.css          ← your original styles + a small addition for the hero canvas
+│   ├── main.js             ← your original script, matrix rain upgraded to WebGL, hero sphere added
+│   ├── juan.png            ← your portrait (transparent cutout — confirmed)
+│   ├── se-aware.jpg
+│   ├── lakat-results.jpg
+│   ├── lakat-itinerary.jpg
+│   ├── toolkit-dashboard.jpg
+│   ├── ss-dashboard.jpg
+│   ├── ss-systools.jpg
+│   ├── tropa-feed.jpg
+│   ├── tropa-profile.jpg
+│   ├── badge-google-ai.png
+│   └── favicon.png
+└── README.md
 ```
 
----
+## What changed from your original
+
+Nothing about your design was replaced — the frameless portrait, aurora drift, grid
+backdrop, cursor spotlight, scroll-progress bar, count-up stats, word-by-word hero
+headline, and self-drawing timeline are all exactly as you built them.
+
+Two things were added on top, both real 3D (WebGL via Three.js, not CSS tricks):
+
+- **Matrix rain now has actual depth.** Instead of a flat 2D canvas, columns fall at
+  different distances from the camera, with fog dimming the far ones and a very slight
+  camera drift on mouse move. Same visual role, same `#matrix` element, same masking —
+  just rendered in three dimensions. If the Three.js CDN script ever fails to load, it
+  quietly falls back to your original 2D canvas rain, so the effect degrades instead of
+  breaking.
+- **A network sphere behind the hero.** A slowly rotating wireframe icosahedron with
+  pulsing nodes, sitting behind your name and bio. It's a nod to the service-desk and
+  network-security thread running through the résumé below it. Tilts gently as you move
+  the mouse across the hero.
+
+Both respect `prefers-reduced-motion` exactly like your existing matrix rain did — with
+that setting on, they're skipped entirely.
 
 ## Putting it online for free
 
@@ -35,12 +64,9 @@ To update later, drag the folder again (or connect it to GitHub as in Option B).
    ```
    yourusername.github.io
    ```
-   (replace `yourusername` with your actual GitHub username. This exact name is what makes
-   it work as a personal site)
 3. Make it **Public**, then click **uploading an existing file** on the repo page.
-4. Drag in `index.html`, `README.md`, and the `assets` folder.
-   > **Important:** drag the *contents* of the `site` folder, not the folder itself.
-   > `index.html` must sit at the top level of the repo.
+4. Drag in `index.html`, `README.md`, and the `assets` folder (drag the *contents* of
+   `site`, not the folder itself — `index.html` must sit at the top level of the repo).
 5. Click **Commit changes**.
 6. Go to **Settings → Pages**. Under *Branch*, pick `main` / `/ (root)` and Save.
 7. Wait 1 to 2 minutes. Your site is live at `https://yourusername.github.io`
@@ -49,47 +75,54 @@ To update later, drag the folder again (or connect it to GitHub as in Option B).
 
 ## Editing your content
 
-Everything is plain HTML. You can edit it in Notepad, VS Code, or directly on GitHub
-by clicking the pencil icon on any file.
-
 | What you want to change | Where |
 |---|---|
 | Your name, tagline, bio | `index.html`, the `<header class="hero">` block |
-| Job history | `index.html`, the `#experience` section, copy a `<div class="tl-item">` |
-| Projects | `index.html`, the `#projects` section, copy the whole `<article class="project">` |
-| Project screenshot | replace `assets/se-aware.jpg` |
+| Job history | `index.html`, the `#experience` section |
+| Projects | `index.html`, the `#projects` section |
+| Project screenshots | replace the matching file in `assets/` |
 | Skills | `index.html`, the `<ul class="tags">` list |
-| Profile photo | replace `assets/juan.png` (transparent PNG, square canvas) |
+| Profile photo | replace `assets/juan.png` (transparent PNG, cropped tight) |
 | Certifications + verify links | `index.html`, the `<ul class="cert-list">` in `#skills` |
 | Email, LinkedIn, socials | `index.html`, the `#contact` section, **and** the footer |
-| Colours | `assets/style.css`, the `:root` block at the very top |
-| Matrix rain colour | `--matrix` in that same `:root` block |
-| How long the rain trails are | `--matrix-fade`. Higher number = shorter tails |
-
----
-
-## About the profile photo
-
-The photo is a transparent PNG, so it floats on the page with no frame. Its shadow
-traces your silhouette rather than a box, and on desktop it tilts and picks up a glow
-when the cursor moves over it.
-
-To use a **framed** photo instead (a rectangle with a background baked in):
-
-1. Put your square `.jpg` in `assets/`
-2. In `index.html`, change the `<img src>` to point at it
-3. Add the `framed` class: `<div class="portrait framed">`
+| Colours | `assets/style.css`, the `:root` block at the top |
+| Matrix rain colour | `--matrix` in that same `:root` block (both the 2D and 3D rain read it) |
+| Matrix rain density / speed | `assets/main.js`, `COLUMNS` / `SPACING` in `initMatrixRain3D()` |
+| Hero sphere size / speed | `assets/main.js`, `radius` and rotation speeds in the hero-net block |
 
 ## Notes
 
-- **One theme only.** The light mode and its toggle were removed. Everything is driven
-  by the `:root` variables in `style.css`, so changing `--bg`, `--text` and `--accent`
-  re-skins the whole site.
-- **The matrix rain** is a canvas drawn in `main.js`. It runs at 24fps on desktop and
-  15fps on phones, pauses when the tab is in the background, and is removed entirely
-  for anyone with reduced motion enabled.
-- **Custom domain:** both Netlify and GitHub Pages support them for free (you just pay for
-  the domain itself, roughly 500 to 900 pesos a year). Netlify: *Domain settings → Add custom domain*.
+- **Three.js** loads from `cdnjs.cloudflare.com`. For fully offline use, download
+  `three.min.js` and point the `<script src>` in `index.html` at a local copy in `assets/`.
+- **Performance:** both 3D effects are pixel-ratio-capped, pause on a background tab, and
+  fall back or disable gracefully — WebGL failure degrades to the 2D rain, and reduced
+  motion disables both.
+- **Custom domain:** both Netlify and GitHub Pages support them for free (domain itself
+  runs roughly 500–900 pesos/year). Netlify: *Domain settings → Add custom domain*.
   GitHub Pages: *Settings → Pages → Custom domain*.
-- **Fonts** load from Google Fonts. If the site is opened with no internet, it falls back to
-  system fonts and still looks fine.
+- **Fonts** load from Google Fonts and fall back to system fonts offline.
+
+## Live
+
+Deployed at **https://miggiegeorge.github.io/JP.Dente-Portfolio/** — `og:url`, the JSON-LD
+`"url"`, and the `og:image`/`twitter:image`/JSON-LD `"image"` paths are all set to this
+real address. If the site ever moves to a different URL, update those same spots in
+`index.html`'s `<head>`.
+
+## What else got added
+
+- **Résumé PDF.** `assets/Juan_Paolo_Dente_Resume.pdf` — a plain one-page, print-safe
+  résumé (not matrix-themed on purpose, so it prints and scans through ATS software
+  cleanly) generated from the same content as the site. Linked from a "Download résumé"
+  button in the hero. Regenerate it by hand if your experience/certs change — it isn't
+  auto-synced with the HTML.
+- **Social share image.** `assets/og-image.jpg`, a 1200×630 branded card shown when the
+  link is pasted into LinkedIn, Slack, Messenger, etc., wired up via Open Graph and
+  Twitter Card meta tags.
+- **JSON-LD Person schema** in the `<head>` so Google can potentially show your role and
+  employer directly in search results.
+- **Images converted to WebP** with the original JPG/PNG kept as a fallback via
+  `<picture>` — roughly halves the load weight of the screenshots and portrait with no
+  visible quality difference. If you add a new screenshot later, generate a matching
+  `.webp` (any online converter or `cwebp` works) if you want the same treatment, or just
+  add a plain `<img>` — it'll still work, just slightly heavier.

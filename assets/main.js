@@ -7,6 +7,25 @@
   root.classList.add('js');
 
   document.addEventListener('DOMContentLoaded', function () {
+    // --- project filters ---
+    var filterBtns = document.querySelectorAll('.filter-btn');
+    var projectCards = document.querySelectorAll('.project[data-category]');
+    if (filterBtns.length && projectCards.length) {
+      filterBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = btn.getAttribute('data-filter');
+          filterBtns.forEach(function (b) {
+            b.classList.toggle('is-active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+          projectCards.forEach(function (card) {
+            var matches = target === 'all' || card.getAttribute('data-category') === target;
+            card.classList.toggle('is-hidden', !matches);
+          });
+        });
+      });
+    }
+
     // --- active nav link ---
     var here = location.pathname.split('/').pop() || 'index.html';
     document.querySelectorAll('.nav-links a[href]').forEach(function (a) {
@@ -37,11 +56,17 @@
       items.forEach(function (el) { el.classList.add('in'); });
       return;
     }
+    // threshold is intentionally tiny (not a "12% of the element visible" gate):
+    // for a short stat card that's basically instant either way, but for a tall
+    // multi-project section it's the difference between revealing as soon as
+    // you scroll to it versus waiting until 12% of a several-thousand-pixel
+    // block has scrolled past — which could mean never, on a short section
+    // wrapping a very long one.
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.01, rootMargin: '0px 0px -40px 0px' });
     items.forEach(function (el) { io.observe(el); });
 
     var calmMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -233,7 +258,64 @@
 
 
     // --- matrix rain backdrop ---
-    if (!calmMotion) {
+    // Real depth via WebGL when Three.js is available (columns sit at different
+    // z distances, with fog dimming the far ones). Falls back to the original
+    // flat 2D canvas rain if the CDN script didn't load, so the effect degrades
+    // rather than disappearing.
+    if (!calmMotion && typeof THREE !== 'undefined') {
+      initMatrixRain3D();
+    } else if (!calmMotion) {
+      initMatrixRain2D();
+    }
+
+    function rainColor() {
+      var c = getComputedStyle(document.documentElement).getPropertyValue('--matrix').trim();
+      return c || '#00ff41';
+    }
+
+    // Draws a single character to a small canvas and returns it as a texture,
+    // used for every "glyph" that needs to face the camera — the matrix rain
+    // and the binary packets travelling the hero globe's arcs. Pass white to
+    // get a neutral glyph that a material's vertexColors can then tint/dim.
+    function makeGlyphTexture(ch, colorHex, blurPx) {
+      var size = 64;
+      var cnv = document.createElement('canvas');
+      cnv.width = size; cnv.height = size;
+      var c = cnv.getContext('2d');
+      c.font = '700 42px "JetBrains Mono", monospace';
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      if (blurPx) c.filter = 'blur(' + blurPx + 'px)';
+      c.shadowColor = colorHex;
+      c.shadowBlur = 14;
+      c.fillStyle = colorHex;
+      c.fillText(ch, size / 2, size / 2 + 2);
+      c.shadowBlur = 2;
+      c.fillText(ch, size / 2, size / 2 + 2);
+      var tex = new THREE.CanvasTexture(cnv);
+      tex.needsUpdate = true;
+      return tex;
+    }
+
+    // A soft round glow, used for the deep starfield behind the rain — a hard
+    // square point here would read as digital noise rather than distant light.
+    function makeSoftDotTexture() {
+      var size = 64;
+      var cnv = document.createElement('canvas');
+      cnv.width = size; cnv.height = size;
+      var c = cnv.getContext('2d');
+      var g = c.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(0.35, 'rgba(255,255,255,0.55)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      c.fillStyle = g;
+      c.fillRect(0, 0, size, size);
+      var tex = new THREE.CanvasTexture(cnv);
+      tex.needsUpdate = true;
+      return tex;
+    }
+
+    function initMatrixRain2D() {
       var cv = document.createElement('canvas');
       cv.id = 'matrix';
       cv.setAttribute('aria-hidden', 'true');
@@ -241,14 +323,8 @@
       var ctx = cv.getContext('2d');
 
       var GLYPHS = 'アカサタナハマヤラワィゥヴカ0123456789ABCDEF<>[]{}/\\|=+*#$%'.split('');
-      // wider spacing and a lower frame rate on phones: fewer columns, less battery
       var small = innerWidth < 640;
       var FONT = small ? 20 : 16, cols = 0, drops = [], speeds = [], dpr = 1;
-
-      function rainColor() {
-        var c = getComputedStyle(document.documentElement).getPropertyValue('--matrix').trim();
-        return c || '#38bdf8';
-      }
 
       function size() {
         dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -260,14 +336,11 @@
         cols = Math.ceil(innerWidth / FONT);
         drops = []; speeds = [];
         for (var i = 0; i < cols; i++) {
-          drops.push(Math.random() * -60);              // stagger the start so it does not fall as one wall
-          speeds.push(0.35 + Math.random() * 0.55);     // per-column speed keeps it from looking mechanical
+          drops.push(Math.random() * -60);
+          speeds.push(0.35 + Math.random() * 0.55);
         }
       }
 
-      // Erase old trails instead of painting the background colour over them.
-      // Painting white each frame left a grey haze on the light theme; wiping with
-      // destination-out keeps the canvas genuinely transparent so the page shows through.
       var fadeAlpha = 0.09;
       function refreshFade() {
         fadeAlpha = parseFloat(getComputedStyle(document.documentElement)
@@ -277,11 +350,11 @@
       var last = 0, FPS = small ? 15 : 24;
       function frame(ts) {
         requestAnimationFrame(frame);
-        if (document.hidden) return;                    // stop burning CPU on a background tab
+        if (document.hidden) return;
         if (ts - last < 1000 / FPS) return;
         last = ts;
 
-        ctx.globalCompositeOperation = 'destination-out';   // wipe, do not paint
+        ctx.globalCompositeOperation = 'destination-out';
         ctx.fillStyle = 'rgba(0,0,0,' + fadeAlpha + ')';
         ctx.fillRect(0, 0, innerWidth, innerHeight);
         ctx.globalCompositeOperation = 'source-over';
@@ -292,10 +365,10 @@
           var ch = GLYPHS[(Math.random() * GLYPHS.length) | 0];
           var y = drops[i] * FONT;
           if (y > 0) {
-            ctx.fillStyle = col;                        // bright head of the column
+            ctx.fillStyle = col;
             ctx.globalAlpha = 0.85;
             ctx.fillText(ch, i * FONT, y);
-            ctx.globalAlpha = 0.35;                     // dimmer character just behind it
+            ctx.globalAlpha = 0.35;
             ctx.fillText(GLYPHS[(Math.random() * GLYPHS.length) | 0], i * FONT, y - FONT);
             ctx.globalAlpha = 1;
           }
@@ -308,6 +381,272 @@
       addEventListener('resize', function () { size(); refreshFade(); }, { passive: true });
       requestAnimationFrame(frame);
     }
+
+    function initMatrixRain3D() {
+      var cv = document.createElement('canvas');
+      cv.id = 'matrix';
+      cv.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(cv);
+
+      var renderer;
+      try {
+        renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false, alpha: true });
+      } catch (e) {
+        cv.remove();
+        initMatrixRain2D();
+        return;
+      }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+
+      var scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x050806, 0.0062);
+
+      var camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 1, 500);
+      camera.position.set(0, 0, 80);
+
+      var small = innerWidth < 640;
+      var COLUMNS = small ? 55 : 130;
+      var TRAIL = 15;
+      var SPACING = 3.1;
+      var depths = [-30, -90, -170, -260];
+      var TOTAL = COLUMNS * TRAIL;
+
+      var heads = [];
+      var accentColor = new THREE.Color(rainColor());
+      var whiteColor = new THREE.Color(0xffffff);
+
+      // A representative slice of the site's original glyph set (full katakana
+      // + alphanumeric + symbol mix lives in the 2D fallback below) — enough
+      // variety to read as real Matrix code rather than a wall of 0s and 1s,
+      // without needing dozens of texture groups.
+      var GLYPH_POOL = ['0', '1', '8', '#', 'ア', 'カ', 'ナ', 'ヴ'];
+      var GLYPH_COUNT = GLYPH_POOL.length;
+
+      // Each (column, trail-slot) is permanently assigned one glyph at
+      // creation, so a slot keeps its character as it falls and loops — same
+      // trick real matrix-rain implementations use rather than re-rolling
+      // every frame. Each column is also permanently assigned a depth tier
+      // (near/mid/far), matching the depth band it was seeded into, so
+      // foreground columns render with a sharp glyph texture and background
+      // columns with a pre-blurred one — real depth-of-field, baked into the
+      // texture rather than faked with a runtime blur shader.
+      var depthTierOf = [0, 1, 2, 2]; // maps depths[] index -> tier (0=near,1=mid,2=far)
+      var TIER_COUNT = 3;
+      var GROUP_COUNT = TIER_COUNT * GLYPH_COUNT;
+      var glyphIdxOf = new Uint8Array(TOTAL);
+      var tierOf = new Uint8Array(TOTAL);
+      var bufIndex = new Int32Array(TOTAL);
+      var groupCount = new Array(GROUP_COUNT).fill(0); // index = tier*GLYPH_COUNT + glyphIdx
+      for (var k = 0; k < TOTAL; k++) {
+        var col = Math.floor(k / TRAIL);
+        var tier = depthTierOf[col % depths.length];
+        var glyphIdx = (Math.random() * GLYPH_COUNT) | 0;
+        glyphIdxOf[k] = glyphIdx;
+        tierOf[k] = tier;
+        var gi = tier * GLYPH_COUNT + glyphIdx;
+        bufIndex[k] = groupCount[gi]++;
+      }
+
+      var groupPositions = [], groupColors = [];
+      for (var gi2 = 0; gi2 < GROUP_COUNT; gi2++) {
+        groupPositions.push(new Float32Array(groupCount[gi2] * 3));
+        groupColors.push(new Float32Array(groupCount[gi2] * 3));
+      }
+
+      function visibleHalfSize(z) {
+        var dist = camera.position.z - z;
+        var vFov = (camera.fov * Math.PI) / 180;
+        var h = 2 * Math.tan(vFov / 2) * dist;
+        return { w: (h * camera.aspect) / 2, h: h / 2 };
+      }
+
+      function seedColumns() {
+        heads.length = 0;
+        for (var c = 0; c < COLUMNS; c++) {
+          var z = depths[c % depths.length] + (Math.random() * 20 - 10);
+          var bounds = visibleHalfSize(z);
+          var x = (Math.random() * 2 - 1) * bounds.w * 1.05;
+          var speed = Math.max(0.35, (28 + z * 0.09) * (0.6 + Math.random() * 0.6) * 0.045);
+          heads.push({
+            x: x, z: z,
+            y: Math.random() * bounds.h * 2 - bounds.h,
+            speed: speed,
+            top: bounds.h + SPACING * TRAIL,
+            bottom: -bounds.h - SPACING * TRAIL
+          });
+        }
+      }
+      seedColumns();
+
+      var tmpHeadColor = new THREE.Color();
+      function layout() {
+        for (var c = 0; c < COLUMNS; c++) {
+          var head = heads[c];
+          for (var i = 0; i < TRAIL; i++) {
+            var k = c * TRAIL + i;
+            var b = Math.max(0, 1 - i / TRAIL);
+            b = i === 0 ? 1.6 : b * b;
+            var x = head.x, y = head.y + i * SPACING, z = head.z;
+            var gi = tierOf[k] * GLYPH_COUNT + glyphIdxOf[k];
+            var pos = groupPositions[gi];
+            var colArr = groupColors[gi];
+            var idx = bufIndex[k] * 3;
+            pos[idx] = x; pos[idx + 1] = y; pos[idx + 2] = z;
+            if (i === 0) {
+              // the leading character of each column glows near-white, the
+              // classic Matrix "head" — a genuine white blend, not just a
+              // brightness bump on the accent colour
+              tmpHeadColor.copy(accentColor).lerp(whiteColor, 0.65);
+              colArr[idx] = tmpHeadColor.r;
+              colArr[idx + 1] = tmpHeadColor.g;
+              colArr[idx + 2] = tmpHeadColor.b;
+            } else {
+              colArr[idx] = accentColor.r * b;
+              colArr[idx + 1] = accentColor.g * b;
+              colArr[idx + 2] = accentColor.b * b;
+            }
+          }
+        }
+      }
+      layout();
+
+      // sharp up close, progressively blurred with depth — the blur is baked
+      // into the texture itself (canvas filter, at draw time), not a runtime
+      // effect, so it's cheap and can't misbehave per-frame
+      var blurByTier = [0, 1.6, 3.2];
+      var texByTierGlyph = [];
+      for (var ti = 0; ti < TIER_COUNT; ti++) {
+        var row = [];
+        for (var gch = 0; gch < GLYPH_COUNT; gch++) {
+          row.push(makeGlyphTexture(GLYPH_POOL[gch], '#ffffff', blurByTier[ti]));
+        }
+        texByTierGlyph.push(row);
+      }
+
+      var geos = [];
+      for (var gi3 = 0; gi3 < GROUP_COUNT; gi3++) {
+        var g = new THREE.BufferGeometry();
+        g.setAttribute('position', new THREE.BufferAttribute(groupPositions[gi3], 3));
+        g.setAttribute('color', new THREE.BufferAttribute(groupColors[gi3], 3));
+        geos.push(g);
+      }
+
+      function rainMaterial(tex, sizePx) {
+        return new THREE.PointsMaterial({
+          map: tex,
+          size: sizePx,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.95,
+          sizeAttenuation: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+      }
+
+      // slightly larger points for blurrier tiers compensates for the softer
+      // texture reading smaller/dimmer than the crisp one at the same size
+      var sizeByTier = [6.2, 6.6, 7.2];
+      for (var ti2 = 0; ti2 < TIER_COUNT; ti2++) {
+        for (var gch2 = 0; gch2 < GLYPH_COUNT; gch2++) {
+          var idx2 = ti2 * GLYPH_COUNT + gch2;
+          scene.add(new THREE.Points(geos[idx2], rainMaterial(texByTierGlyph[ti2][gch2], sizeByTier[ti2])));
+        }
+      }
+
+      // deep starfield: sparse, dim points scattered far behind the rain columns,
+      // so the backdrop reads as open space rather than a flat wall of code
+      var STAR_COUNT = small ? 200 : 420;
+      var starPos = new Float32Array(STAR_COUNT * 3);
+      var starCol = new Float32Array(STAR_COUNT * 3);
+      var starPhase = new Float32Array(STAR_COUNT);
+      var starBase = new Float32Array(STAR_COUNT);
+      var starTint = new THREE.Color(rainColor());
+      var sb = visibleHalfSize(-450);
+      for (var s = 0; s < STAR_COUNT; s++) {
+        starPos[s * 3] = (Math.random() * 2 - 1) * sb.w * 1.4;
+        starPos[s * 3 + 1] = (Math.random() * 2 - 1) * sb.h * 1.4;
+        starPos[s * 3 + 2] = -320 - Math.random() * 260;
+        var isGreen = Math.random() < 0.35;
+        var brightness = 0.25 + Math.random() * 0.5;
+        starBase[s] = brightness;
+        var col = isGreen ? starTint : new THREE.Color(0xffffff);
+        starCol[s * 3] = col.r * brightness;
+        starCol[s * 3 + 1] = col.g * brightness;
+        starCol[s * 3 + 2] = col.b * brightness;
+        starPhase[s] = Math.random() * Math.PI * 2;
+      }
+      var starGeo = new THREE.BufferGeometry();
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      starGeo.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
+      var starMat = new THREE.PointsMaterial({
+        map: makeSoftDotTexture(), size: 2.4, vertexColors: true, transparent: true,
+        opacity: 0.85, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+      var starField = new THREE.Points(starGeo, starMat);
+      scene.add(starField);
+
+      function resize() {
+        renderer.setSize(innerWidth, innerHeight);
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+        seedColumns();
+      }
+      resize();
+      addEventListener('resize', resize, { passive: true });
+
+      var mouseX = 0, mouseY = 0, camX = 0, camY = 0;
+      addEventListener('mousemove', function (e) {
+        mouseX = e.clientX / innerWidth - 0.5;
+        mouseY = e.clientY / innerHeight - 0.5;
+      }, { passive: true });
+
+      var clock = new THREE.Clock();
+      var elapsed = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        if (document.hidden) return;
+        var dt = Math.min(clock.getDelta(), 0.05);
+        elapsed += dt;
+
+        for (var c = 0; c < COLUMNS; c++) {
+          var head = heads[c];
+          head.y -= head.speed;
+          if (head.y < head.bottom) head.y = head.top;
+        }
+        layout();
+        for (var gu = 0; gu < geos.length; gu++) {
+          geos[gu].attributes.position.needsUpdate = true;
+          geos[gu].attributes.color.needsUpdate = true;
+        }
+
+        // twinkle the starfield
+        var starAttr = starGeo.attributes.color;
+        for (var s2 = 0; s2 < STAR_COUNT; s2++) {
+          var tw = 0.65 + 0.35 * Math.sin(elapsed * 0.6 + starPhase[s2]);
+          var b2 = starBase[s2] * tw;
+          var idx2 = s2 * 3;
+          starAttr.array[idx2] = (starCol[idx2] / starBase[s2]) * b2;
+          starAttr.array[idx2 + 1] = (starCol[idx2 + 1] / starBase[s2]) * b2;
+          starAttr.array[idx2 + 2] = (starCol[idx2 + 2] / starBase[s2]) * b2;
+        }
+        starAttr.needsUpdate = true;
+
+        // mouse parallax plus a slow autonomous drift, so the scene keeps
+        // breathing even when nobody's moving the cursor
+        var driftX = Math.sin(elapsed * 0.09) * 2.2;
+        var driftY = Math.cos(elapsed * 0.07) * 1.1;
+        camX += (mouseX * 5 + driftX - camX) * 0.02;
+        camY += (-mouseY * 3 + driftY - camY) * 0.02;
+        camera.position.x = camX;
+        camera.position.y = camY;
+        camera.lookAt(0, 0, -100);
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
 
     // --- typed role line ---
     var typed = document.querySelector('[data-typed]');
