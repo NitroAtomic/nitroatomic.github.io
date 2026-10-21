@@ -209,8 +209,8 @@
         <h3 style="font-size:1.05rem; margin-bottom:8px;">Cybersecurity</h3>
         <p style="color:var(--muted); font-size:0.87rem; margin-bottom:12px;">
           Where the career is heading: the full Google Cybersecurity Professional Certificate,
-          plus three projects I built myself: a malware and phishing scanner, a Windows firewall
-          and family filter, and a security awareness platform. Not just coursework.
+          plus projects I built myself: a Windows firewall and family filter, a malware and phishing
+          scanner, a disk toolkit, and a security awareness platform. Not just coursework.
         </p>
         <ul class="tags" style="gap:6px;">
           <li>Phishing &amp; Malware Detection</li>
@@ -250,57 +250,8 @@
 
     <p class="project-group-label">Featured security &amp; IT projects</p>
 
-    <!-- ---------- FEATURED: Skull Sentinel (flagship) ---------- -->
-    <article class="project featured reveal" data-category="cybersecurity" style="margin-top:18px;">
-      <div class="project-body">
-        <div class="project-kicker">Flagship · Desktop · Python · Running on Windows</div>
-        <h3>Skull Sentinel</h3>
-        <p class="project-tagline">Threats end here.</p>
-        <p style="color:var(--muted); font-size:0.96rem; margin:0 0 18px;">
-          Built this after one too many tickets that started with someone opening a file named
-          <code>invoice.pdf.exe</code>. Most people can&rsquo;t tell a disguised attachment from
-          a real one, and most free scanners either overclaim or say nothing about what they
-          actually checked. I wanted something honest instead.
-        </p>
-        <div class="project-cols">
-          <p>
-            A Windows malware and phishing scanner. Hashes files against a local signature
-            database and flags double-extension tricks like <code>invoice.pdf.exe</code>.
-            Scores URLs for typosquatting, punycode homographs, raw IP addresses and
-            suspicious TLDs, then reads message text for urgency language and runs every
-            link it finds back through the URL checker.
-          </p>
-          <p>
-            Flagged files are quarantined by moving them, not deleting them, and can be
-            restored. The status row refuses to claim real-time protection it does not have,
-            and every action lands in a local activity log, because a security tool should
-            not ask you to trust it silently.
-          </p>
-        </div>
-
-        <div class="shot-row wide">
-          <figure>
-            <picture><source srcset="assets/ss-dashboard.webp" type="image/webp"><img src="assets/ss-dashboard.jpg" alt="Skull Sentinel dashboard after a scan, showing seven suspicious links and the activity log" width="1100" height="741" style="aspect-ratio:1100/741" loading="lazy"></picture>
-            <figcaption>Status row reports only what the app actually knows</figcaption>
-          </figure>
-          <figure>
-            <picture><source srcset="assets/ss-systools.webp" type="image/webp"><img src="assets/ss-systools.jpg" alt="Skull Sentinel system tools tab with deep scan and Windows repair launchers" width="1100" height="736" style="aspect-ratio:1100/736" loading="lazy"></picture>
-            <figcaption>Launches Windows&rsquo; own SFC, CHKDSK and DISM, does not reimplement them</figcaption>
-          </figure>
-        </div>
-
-        <ul class="tags" style="margin:18px 0 20px;">
-          <li>Python</li>
-          <li>pywebview</li>
-          <li>SHA256</li>
-          <li>Phishing Heuristics</li>
-          <li>PyInstaller</li>
-        </ul>
-      </div>
-    </article>
-
     <!-- ---------- AEGISWFP ---------- -->
-    <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
+    <article class="project featured reveal" data-category="cybersecurity" style="margin-top:18px;">
       <div class="project-body">
         <div class="project-kicker">Desktop · C# / .NET 8 · WPF · Windows Service · 26 phases plus 8 updates</div>
         <h3>AEGISWFP</h3>
@@ -323,7 +274,7 @@
           </p>
         </div>
         <p>
-          The rule it is built on is the same one behind the Agent Juan Toolkit: <strong>show
+          The rule it is built on is the same one behind all my Aegis tools: <strong>show
           what is real, never just what a switch says.</strong> The blocked list is read back from
           the hosts file. &ldquo;Protecting 3 devices&rdquo; only appears after 3 devices really used
           the filter. A category with no trustworthy list says &ldquo;not blocking yet&rdquo;.
@@ -372,68 +323,185 @@
           <li>xUnit</li>
           <li>Inno Setup</li>
         </ul>
+        <a class="btn btn-primary" href="assets/AEGISWFP.pdf" target="_blank" rel="noopener">
+          View project (PDF) &rarr;
+        </a>
       </div>
     </article>
 
-    <!-- ---------- Agent Juan Toolkit ---------- -->
-    <article class="project featured reveal" data-category="it-automation" style="margin-top:26px;">
+    <!-- ---------- Aegis DiskGuard ---------- -->
+    <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
       <div class="project-body">
-        <div class="project-kicker">Windows · PowerShell · Running on a real machine</div>
-        <h3>Agent Juan Toolkit</h3>
-        <p class="project-tagline">The tech&rsquo;s bench, in one window.</p>
-        <p>
-          A single PowerShell script that opens as a dashboard of 29 one-click fixes for the
-          problems a service desk sees every day, across networking, system repair, printing,
-          diagnostics and security. Winsock and TCP/IP resets, DNS flush, hosts file restore,
-          SFC and DISM, Windows Update repair, print spooler recovery, SMART disk health,
-          pending reboot checks and a failed sign-in audit.
-        </p>
-        <p>
-          The design decisions are the interesting part. Every fix is a <em>documented Windows
-          command</em>, nothing third-party and nothing bundled, so the tool is auditable by
-          anyone who knows Windows. Every card confirms before it runs. The hosts file reset
-          aborts rather than proceed if its backup fails.
-        </p>
-        <p>
-          The rule the whole thing is built on: <strong>the log never claims success it has not
-          verified.</strong> Every action captures the command&rsquo;s real exit code and output
-          and reports what actually happened, and several go further and check the world
-          instead of the exit code. Renew IP reads back the address you ended up holding and
-          flags a self-assigned one. The connectivity test separates a dead link from a DNS
-          fault. That matters because the person reading the log is deciding whether to stop
-          troubleshooting.
-        </p>
-        <p>
-          <em>Collect for Ticket</em> gathers what a ticket always asks for, down to the serial
-          number for warranty lookup, and writes it to a file. The session log writes itself to
-          disk from launch, so the record of what was done to a machine survives even if the
-          window is closed mid-repair.
-        </p>
-        <p>
-          Alongside the fixes sits a <strong>knowledge base of 24 Windows faults</strong>, and
-          one search box queries both. Type <code>0x80073712</code> and you get the component
-          store article plus the DISM card it tells you to press. Type <code>printer offline</code>
-          or <code>temporary profile</code> and you get symptoms, the real cause, and numbered
-          steps ordered cheapest and most likely first. Reading an article writes it to the same
-          log, so what was looked up is recorded next to what was run.
-        </p>
+        <div class="project-kicker">Desktop · C# · WinForms · Raw disk I/O · 13 tools</div>
+        <h3>Aegis DiskGuard</h3>
+        <p class="project-tagline">Scan. Repair. Protect.</p>
+        <div class="project-cols">
+          <p>
+            An SSD and HDD maintenance toolkit for Windows, built after a 128 GB laptop drive filled up and a clone tool sat at 0% with a 14 hour estimate. It puts backup, clone, repair, recovery and erase in one dark, simple app, in plain words, with a warning before anything destructive.
+          </p>
+          <p>
+            It runs as one .exe with nothing to install, built with the compiler already inside Windows. Every destructive step follows one path: check the disk is safe to touch, ask the person to type its disk number, run, then report in plain words.
+          </p>
+        </div>
 
         <div class="shot-row wide">
           <figure>
-            <picture><source srcset="assets/toolkit-dashboard.webp" type="image/webp"><img src="assets/toolkit-dashboard.jpg" alt="Agent Juan Toolkit dashboard showing fix cards for processes, hardware report, connectivity, startup programs, speed test, disk check and cleanup, with a timestamped activity log below" width="1200" height="644" style="aspect-ratio:1200/644" loading="lazy"></picture>
-            <figcaption>Every fix is a card with a description, tags and a confirmation step. The log below is exportable.</figcaption>
+            <picture><source srcset="assets/aegis-diskguard-dash.webp" type="image/webp"><img src="assets/aegis-diskguard-dash.jpg" alt="Aegis DiskGuard overview dashboard listing every disk with its health" width="1100" height="786" style="aspect-ratio:1100/786" loading="lazy"></picture>
+            <figcaption>Overview dashboard: every disk with its health, and one click into any tool (demo data)</figcaption>
+          </figure>
+          <figure>
+            <picture><source srcset="assets/aegis-diskguard-space.webp" type="image/webp"><img src="assets/aegis-diskguard-space.jpg" alt="Aegis DiskGuard Space Map showing the folders using the most space on a real C: drive" width="1100" height="587" style="aspect-ratio:1100/587" loading="lazy"></picture>
+            <figcaption>Space Map: a real scan of my own C: drive</figcaption>
           </figure>
         </div>
 
-        <ul class="tags" style="margin:18px 0 20px;">
+        <ul class="cert-list" style="margin-top:18px;">
+            <li><span class="check">▹</span> About 6.1k lines of C# in nine source files, 13 pages: the dashboard and twelve tools</li>
+            <li><span class="check">▹</span> Real test: cloned a 128 GB NVMe to a 256 GB SSD at about 121 MB/s, booted from the clone and every app worked</li>
+            <li><span class="check">▹</span> Honest limits: most tools that change a disk still need more real drive tests, and Secure Erase is an overwrite, not the maker&rsquo;s hardware erase</li>
+        </ul>
+
+        <details class="tech-details">
+          <summary>Technical details: toolkit, safety rules, honest limits</summary>
+          <ul class="cert-list" style="margin-top:16px;">
+            <li><span class="check">▹</span> The toolkit: Backup and Restore, Clone, Check Drive, Repair Bad Sectors, Flash Drive Repair, File Recovery, Reformat, Rebuild Boot, Secure Erase, Extend Space, Space Map and Duplicate Finder</li>
+            <li><span class="check">▹</span> Raw disk reads and writes in 4 MB blocks, each job on its own thread with cancel, progress and speed</li>
+            <li><span class="check">▹</span> Your Windows disk and the disk the app runs from are hidden from every destructive tool, and you type the disk number before anything is erased</li>
+            <li><span class="check">▹</span> Clones stay offline so Windows does not bring two disks with the same ID online. Backups and recovered files can never be saved onto the disk they came from</li>
+            <li><span class="check">▹</span> Flash Drive Repair writes test patterns across the whole size to catch fake capacity drives, and says so instead of formatting them</li>
+            <li><span class="check">▹</span> The app says what software can not fix, for example that marking bad sectors on an SSD does very little</li>
+          </ul>
+        </details>
+
+        <ul class="tags" style="margin:22px 0 18px;">
+          <li>C#</li>
+          <li>WinForms</li>
+          <li>Raw Disk I/O</li>
+          <li>WMI</li>
+          <li>diskpart</li>
+          <li>chkdsk</li>
+          <li>bcdboot</li>
           <li>PowerShell</li>
+        </ul>
+        <a class="btn btn-primary" href="assets/Aegis-DiskGuard.pdf" target="_blank" rel="noopener">
+          View project (PDF) &rarr;
+        </a>
+      </div>
+    </article>
+
+    <!-- ---------- Aegis Sentinel ---------- -->
+    <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
+      <div class="project-body">
+        <div class="project-kicker">Desktop · C# · Windows Forms · Windows</div>
+        <h3>Aegis Sentinel</h3>
+        <p class="project-tagline">A malware, phishing and cleanup tool for Windows.</p>
+        <div class="project-cols">
+          <p>
+            Eight tools in one window: Malware Scan, URL Check, Message Check, Device Tune-Up, Quarantine, Startup Manager, Activity Log and live protection that checks new files as they arrive. It started as a Python project called Skull Sentinel and is now one C# program with no Python and no installer.
+          </p>
+          <p>
+            Malware Scan uses two checks on every file: a SHA-256 fingerprint compared with known bad files, and a test for disguised programs like invoice.pdf.exe. Nothing is ever deleted on its own, and flagged files go to Quarantine where they can be restored any time.
+          </p>
+        </div>
+
+        <div class="shot-row wide">
+          <figure>
+            <picture><source srcset="assets/aegis-sentinel-dash.webp" type="image/webp"><img src="assets/aegis-sentinel-dash.jpg" alt="Aegis Sentinel dashboard showing protection status, stats and recent activity" width="1100" height="786" style="aspect-ratio:1100/786" loading="lazy"></picture>
+            <figcaption>Dashboard: protection status, your stats and recent activity on one screen</figcaption>
+          </figure>
+          <figure>
+            <picture><source srcset="assets/aegis-sentinel-scan.webp" type="image/webp"><img src="assets/aegis-sentinel-scan.jpg" alt="Aegis Sentinel Malware Scan page" width="1100" height="786" style="aspect-ratio:1100/786" loading="lazy"></picture>
+            <figcaption>Malware Scan: two checks on every file, and nothing deleted on its own</figcaption>
+          </figure>
+        </div>
+
+        <ul class="cert-list" style="margin-top:18px;">
+            <li><span class="check">▹</span> URL Check scores a link before you click it, and Message Check shows why a text or email looks like a scam</li>
+            <li><span class="check">▹</span> Tested on my PC: live protection flagged a fake invoice.pdf.exe with a popup, and the tray icon turns on and off with the switch</li>
+            <li><span class="check">▹</span> Honest limits: a learning project, not a replacement for Windows Defender, with only a tiny list of known bad files</li>
+        </ul>
+
+        <details class="tech-details">
+          <summary>Technical details: live protection, structure, limits</summary>
+          <ul class="cert-list" style="margin-top:16px;">
+            <li><span class="check">▹</span> Live protection in five steps: a new file lands, it waits until the copy is finished, it is checked, an alert pops up from the tray icon, and you decide to quarantine it or leave it alone</li>
+            <li><span class="check">▹</span> URL Check looks for fake brand names, look-alike spelling, risky endings, raw IP addresses, link shorteners and words like login and verify in odd places</li>
+            <li><span class="check">▹</span> Message Check looks for pressure words, deadlines and requests for passwords or OTP codes, and scores every link inside</li>
+            <li><span class="check">▹</span> Device Tune-Up is a CCleaner style cleaner: analyze first, then Run Cleaner. History and cookies start unticked, and it warns when a browser is still open</li>
+            <li><span class="check">▹</span> Startup Manager uses the same switch as Task Manager, marks odd entries CHECK and logs every change</li>
+            <li><span class="check">▹</span> Built as one program in five code files, with a single build.bat that uses the compiler already in Windows</li>
+            <li><span class="check">▹</span> Live protection watches three folders while the app runs, and link and message checks are rules of thumb</li>
+          </ul>
+        </details>
+
+        <ul class="tags" style="margin:22px 0 18px;">
+          <li>C#</li>
           <li>Windows Forms</li>
-          <li>UAC Elevation</li>
-          <li>netsh / sfc / dism</li>
-          <li>WMI / CIM</li>
-          <li>Event Log</li>
+          <li>SHA-256</li>
+          <li>Phishing Heuristics</li>
+          <li>File System Watcher</li>
+          <li>Quarantine</li>
+        </ul>
+        <a class="btn btn-primary" href="assets/Aegis-Sentinel.pdf" target="_blank" rel="noopener">
+          View project (PDF) &rarr;
+        </a>
+      </div>
+    </article>
+
+    <!-- ---------- Aegis Warden ---------- -->
+    <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
+      <div class="project-body">
+        <div class="project-kicker">Desktop · C# · Windows Forms · v1.1</div>
+        <h3>Aegis Warden</h3>
+        <p class="project-tagline">One click fixes for network and Windows problems, with a log that tells the truth.</p>
+        <div class="project-cols">
+          <p>
+            I kept fixing the same problems by hand: slow internet, a stuck print queue, a PC that drags. My first version was a PowerShell script with a console menu. Aegis Warden is the same fixes as one .exe with a dashboard, a live log and 32 fixes in clear groups: Networking, Diagnostics, Disk and system, Printing and Tools.
+          </p>
+          <p>
+            The log never claims success it did not check. Every run ends as FINISHED, PROBLEMS or STOPPED, and a line with FAILED, ERROR, WARNING or Could not marks the run as PROBLEMS. Each fix asks once before it runs, and Cancel stops the whole process tree.
+          </p>
+        </div>
+
+        <div class="shot-row wide">
+          <figure>
+            <picture><source srcset="assets/aegis-warden-dash.webp" type="image/webp"><img src="assets/aegis-warden-dash.jpg" alt="Aegis Warden dashboard with tool tiles, a session summary and the live log" width="1100" height="802" style="aspect-ratio:1100/802" loading="lazy"></picture>
+            <figcaption>Dashboard: tool tiles, a summary of the session and the live log on the side</figcaption>
+          </figure>
+          <figure>
+            <picture><source srcset="assets/aegis-warden-net.webp" type="image/webp"><img src="assets/aegis-warden-net.jpg" alt="Aegis Warden networking page with one click fixes" width="1100" height="802" style="aspect-ratio:1100/802" loading="lazy"></picture>
+            <figcaption>Networking: flush DNS, renew the IP, or run the full Network Reset in one click</figcaption>
+          </figure>
+        </div>
+
+        <ul class="cert-list" style="margin-top:18px;">
+            <li><span class="check">▹</span> 24 plain language Knowledge Base articles explain each problem, with a search box that finds fixes and articles together</li>
+            <li><span class="check">▹</span> Version 1.1 added Network Reset, Wi-Fi Report, Slow PC Check, Ping and Trace and Save Report</li>
+            <li><span class="check">▹</span> Honest limits: the fixes were built and viewed on screen but not yet run on real Windows PCs, and some need administrator rights</li>
+        </ul>
+
+        <details class="tech-details">
+          <summary>Technical details: runner, log, safety</summary>
+          <ul class="cert-list" style="margin-top:16px;">
+            <li><span class="check">▹</span> The original PowerShell fix bodies are kept as they were, so results match the old toolkit</li>
+            <li><span class="check">▹</span> Each fix goes to a temp script and runs in a hidden PowerShell on a background thread, so the window never freezes</li>
+            <li><span class="check">▹</span> Output streams in with time stamps and is also saved to a session file in Documents</li>
+            <li><span class="check">▹</span> Ping, trace and DNS lookup check the host name first, so odd characters never reach the command line. They are read only, so they run without a confirm box</li>
+            <li><span class="check">▹</span> One fix at a time, and the window will not close while one is running</li>
+          </ul>
+        </details>
+
+        <ul class="tags" style="margin:22px 0 18px;">
+          <li>C#</li>
+          <li>Windows Forms</li>
+          <li>PowerShell</li>
+          <li>Network Troubleshooting</li>
+          <li>Diagnostics</li>
           <li>Knowledge Base</li>
         </ul>
+        <a class="btn btn-primary" href="assets/Aegis-Warden.pdf" target="_blank" rel="noopener">
+          View project (PDF) &rarr;
+        </a>
       </div>
     </article>
 
