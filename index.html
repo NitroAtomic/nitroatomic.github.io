@@ -506,6 +506,73 @@
       </div>
     </article>
 
+    <!-- ---------- Aegis Hephaestus ---------- -->
+    <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
+      <div class="project-body">
+        <div class="project-kicker">Capstone project · Desktop · C# · .NET 8 · WinForms · v0.22.0</div>
+        <h3>Aegis Hephaestus</h3>
+        <p class="project-tagline">Android and iPhone repair, forged for everyone, with a log that tells the truth.</p>
+        <div class="project-cols">
+          <p>
+            A Windows app that diagnoses common Android and iPhone software problems and applies
+            official, documented repair methods only. It was built because the usual choices for a
+            phone acting up are bad: random forum steps and &ldquo;miracle&rdquo; apps that are
+            outdated or unsafe, or a paid shop for a problem that is often just a stuck cache or a
+            missing driver. It has nine tools, including Android Repair, iPhone Repair, Battery and
+            Storage, USB and Driver Diagnostics, and a searchable troubleshooting reference.
+          </p>
+          <p>
+            It is designed around what it refuses to do. It never bypasses screen locks, PINs or
+            passcodes, never bypasses FRP or Activation Lock, never roots a phone or unlocks a
+            bootloader, and never brute-forces or forces a factory reset. Every action goes
+            through the same path: the device must really be detected, the risk level is shown as
+            Low, Medium or High, medium and high risk actions need a clear yes, and the result is
+            logged either way.
+          </p>
+        </div>
+
+        <div class="shot-row wide">
+          <figure>
+            <picture><source srcset="assets/aegis-hephaestus-dash.webp" type="image/webp"><img src="assets/aegis-hephaestus-dash.jpg" alt="Aegis Hephaestus repair dashboard showing device status, device health score, and repair tools" width="1018" height="772" style="aspect-ratio:1018/772" loading="lazy"></picture>
+            <figcaption>Dashboard: live status for the device, ADB and Fastboot, and Apple support</figcaption>
+          </figure>
+          <figure>
+            <picture><source srcset="assets/aegis-hephaestus-android.webp" type="image/webp"><img src="assets/aegis-hephaestus-android.jpg" alt="Aegis Hephaestus Android Repair page with automated diagnosis and reboot actions" width="1024" height="916" style="aspect-ratio:1024/916" loading="lazy"></picture>
+            <figcaption>Android Repair: guided diagnose and fix, with reversible reboot actions</figcaption>
+          </figure>
+        </div>
+
+        <ul class="cert-list" style="margin-top:18px;">
+            <li><span class="check">▹</span> The log reports only what it actually checked, and each run ends as SAFE, RISKY or SKIPPED</li>
+            <li><span class="check">▹</span> All 7 planned phases built, over 22 version rounds, with 9 rules in the troubleshooting catalog</li>
+            <li><span class="check">▹</span> Honest limits: it has not been compiled and run on a real Windows machine yet, and device testing on my Galaxy S8 test phone is the next step</li>
+        </ul>
+
+        <details class="tech-details">
+          <summary>Technical details: design and safety</summary>
+          <ul class="cert-list" style="margin-top:16px;">
+            <li><span class="check">▹</span> Split into a UI layer, a repair engine and device services, so nothing runs without passing the risk check</li>
+            <li><span class="check">▹</span> Android is handled through adb and fastboot, iPhone through Apple Mobile Device Service, and USB devices through WMI</li>
+            <li><span class="check">▹</span> Screen Lock Recovery gives official account recovery guidance only, never a lock bypass</li>
+            <li><span class="check">▹</span> Where the tools cannot see an exact model or OS version, the app says it is unavailable instead of guessing</li>
+          </ul>
+        </details>
+
+        <ul class="tags" style="margin:22px 0 18px;">
+          <li>C#</li>
+          <li>.NET 8</li>
+          <li>WinForms</li>
+          <li>adb / fastboot</li>
+          <li>WMI</li>
+          <li>Risk Assessment</li>
+          <li>Audit Logging</li>
+        </ul>
+        <a class="btn btn-primary" href="assets/Aegis-Hephaestus.pdf" target="_blank" rel="noopener">
+          View project (PDF) &rarr;
+        </a>
+      </div>
+    </article>
+
     <!-- ---------- Aegis Launcher ---------- -->
     <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
       <div class="project-body">
@@ -808,6 +875,50 @@
           </ul>
         </div>
       </article>
+
+    <!-- ---------- Gamefowl Tracker ---------- -->
+    <article class="project featured reveal" data-category="software-development" style="margin-top:26px;">
+      <div class="project-body">
+        <div class="project-kicker">Personal project · Full-stack · Live</div>
+        <h3>Gamefowl Tracker</h3>
+        <p class="project-tagline">Every bird, pair and peso in one place.</p>
+        <div class="project-cols">
+          <p>
+            A private record book for a breeding farm. It keeps birds with their bloodlines, pairs and
+            hatch records, an incubator countdown, training, sales and expenses, and shows reports by
+            week, month or year with CSV downloads. When chicks are registered from a hatch, their
+            parents are filled in automatically, so the family tree grows with every hatch.
+          </p>
+          <p>
+            It is made for one farm and its staff. Nobody can see the records without a login, passwords
+            are hashed, and only the admin can add or remove staff accounts.
+          </p>
+        </div>
+
+        <div class="shot-row wide">
+          <figure>
+            <picture><source srcset="assets/gamefowl-landing.webp" type="image/webp"><img src="assets/gamefowl-landing.jpg" alt="Gamefowl Tracker landing page with the headline Every bird, pair and peso in one place" width="1100" height="743" style="aspect-ratio:1100/743" loading="lazy"></picture>
+            <figcaption>Landing page: a private record book for breeders</figcaption>
+          </figure>
+          <figure>
+            <picture><source srcset="assets/gamefowl-incubator.webp" type="image/webp"><img src="assets/gamefowl-incubator.jpg" alt="Gamefowl Tracker incubator page showing capacity, eggs in use and the expected hatch date" width="1100" height="687" style="aspect-ratio:1100/687" loading="lazy"></picture>
+            <figcaption>Incubator: space used, active batches and days left to the hatch</figcaption>
+          </figure>
+        </div>
+
+        <ul class="tags" style="margin:22px 0 18px;">
+          <li>Node.js</li>
+          <li>Full-stack</li>
+          <li>Authentication</li>
+          <li>Role-based Admin</li>
+          <li>CSV Reports</li>
+        </ul>
+        <a class="btn btn-primary" href="https://gamefowltracker.onrender.com/" target="_blank" rel="noopener">
+          Visit Gamefowl Tracker &rarr;
+        </a>
+      </div>
+    </article>
+
 
   </div>
 </section>
