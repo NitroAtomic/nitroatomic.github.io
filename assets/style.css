@@ -933,3 +933,13 @@ a, button, input, summary, .filter-btn, .btn, .to-top, [role="tab"] {
 /* desktop/browser screenshots are wide, so they stack rather than sit side by side */
 .shot-row.wide { flex-direction: column; gap: 16px; }
 .shot-row.wide figure { max-width: none; flex: 1 1 auto; }
+
+/* Security by design table (AEGISWFP) */
+.threat-table { margin-top: 20px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: 0.92rem; }
+.threat-title { margin: 0; padding: 12px 16px; font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; color: var(--accent); background: var(--accent-dim); }
+.threat-row { display: grid; grid-template-columns: minmax(150px, 1fr) 2fr; gap: 16px; padding: 10px 16px; border-top: 1px solid var(--border); }
+.threat-row span:first-child { color: var(--text); font-weight: 600; }
+.threat-row span:last-child { color: var(--muted); }
+.threat-head span { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted) !important; font-weight: 500; }
+@media (max-width: 640px) { .threat-row { grid-template-columns: 1fr; gap: 2px; } .threat-head { display: none; } }
+.aegis-intro .cert-list li { padding: 6px 0; }

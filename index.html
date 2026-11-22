@@ -250,6 +250,21 @@
 
     <p class="project-group-label">Featured security &amp; IT projects</p>
 
+    <div class="card aegis-intro reveal" style="margin-top:18px;">
+      <h3 style="margin-bottom:8px;">The Aegis family</h3>
+      <p style="color:var(--muted); margin:0 0 14px;">
+        Six Windows tools I built in one look and under the same rules: AEGISWFP (firewall and family filter),
+        Aegis DiskGuard (disks), Aegis Sentinel (malware and phishing), Aegis Warden (network and Windows fixes),
+        Aegis Hephaestus (phone repair) and the Aegis Launcher that opens them.
+      </p>
+      <ul class="cert-list">
+        <li><span class="check">▹</span> Show what is real. A tool only says something worked after it checked</li>
+        <li><span class="check">▹</span> Ask before changing anything, and log every step, good or bad</li>
+        <li><span class="check">▹</span> Never delete, wipe or bypass on its own. Risky steps need a clear yes</li>
+        <li><span class="check">▹</span> Say the limits out loud. Every card below has an &ldquo;Honest limits&rdquo; line</li>
+      </ul>
+    </div>
+
     <!-- ---------- AEGISWFP ---------- -->
     <article class="project featured reveal" data-category="cybersecurity" style="margin-top:18px;">
       <div class="project-body">
@@ -297,14 +312,21 @@
           <li><span class="check">▹</span> Honest limits: the phone companion uses plain HTTP on the home Wi-Fi (HTTPS is next), and the installer is not code signed yet, so Windows still shows a warning</li>
         </ul>
 
+        <div class="threat-table" role="table" aria-label="AEGISWFP threats and how each one is stopped">
+          <p class="threat-title">Security by design: every threat has a fix and a test</p>
+          <div class="threat-row threat-head" role="row"><span role="columnheader">Threat</span><span role="columnheader">How AEGISWFP stops it</span></div>
+          <div class="threat-row" role="row"><span role="cell">Command injection in the terminal</span><span role="cell">15 fixed commands, checked arguments, no shell behind it</span></div>
+          <div class="threat-row" role="row"><span role="cell">Hosts file injection</span><span role="cell">Strict domain allow-list, checked in the Service and again before writing</span></div>
+          <div class="threat-row" role="row"><span role="cell">Parent PIN guessing</span><span role="cell">PBKDF2 with 210,000 iterations, plus a lockout that grows to 15 minutes</span></div>
+          <div class="threat-row" role="row"><span role="cell">Open DNS resolver</span><span role="cell">Home network devices only, private profile rule, rate limit per device</span></div>
+          <div class="threat-row" role="row"><span role="cell">AI analyst going too far</span><span role="cell">It can only explain. No tools, no access to the Service</span></div>
+          <div class="threat-row" role="row"><span role="cell">Local data leaks</span><span role="cell">Data folder limited to SYSTEM and Administrators</span></div>
+        </div>
+
         <details class="tech-details">
           <summary>Technical details: architecture, security design, Family Shield</summary>
           <ul class="cert-list" style="margin-top:16px;">
             <li><span class="check">▹</span> The App and Service talk over a named pipe. The Service writes to Windows Firewall, the hosts file, a DNS filter on port 53 and an admin-only SQLite database</li>
-            <li><span class="check">▹</span> Parent PIN stored as a salted PBKDF2 hash (210,000 iterations), with a lockout that grows up to 15 minutes</li>
-            <li><span class="check">▹</span> The built-in terminal has 15 fixed commands, typed arguments and no shell behind it, so command injection has nowhere to go</li>
-            <li><span class="check">▹</span> Hosts file changes stay inside AEGISWFP&rsquo;s own markers, checked against a strict domain allow-list in the Service and again before writing</li>
-            <li><span class="check">▹</span> The DNS filter answers home network devices only and is rate limited per device, so it can never become an open resolver</li>
             <li><span class="check">▹</span> The phone companion uses a one-time QR code that is swapped for a new key on first scan, and every tap is signed with HMAC-SHA256, a time stamp and a one-use random value</li>
             <li><span class="check">▹</span> An optional AI analyst can explain findings in plain words. It is off by default, uses your own API key, and its code cannot reach the firewall or the Service</li>
             <li><span class="check">▹</span> Family Shield safety rules: it never cuts anyone off, never pauses the parent&rsquo;s PC, and never damages the hosts file</li>
@@ -400,7 +422,7 @@
             Eight tools in one window: Malware Scan, URL Check, Message Check, Device Tune-Up, Quarantine, Startup Manager, Activity Log and live protection that checks new files as they arrive. It started as a Python project called Skull Sentinel and is now one C# program with no Python and no installer.
           </p>
           <p>
-            Malware Scan uses two checks on every file: a SHA-256 fingerprint compared with known bad files, and a test for disguised programs like invoice.pdf.exe. Nothing is ever deleted on its own, and flagged files go to Quarantine where they can be restored any time.
+            Malware Scan uses two checks on every file: a SHA-256 fingerprint compared with known bad files, and a test for disguised programs like invoice.pdf.exe. Nothing is ever deleted on its own. Flagged files go to Quarantine with a SHA-256 record, and the file is checked against it before it can be restored. Inspect file trust shows a file&rsquo;s SHA-256 and signer.
           </p>
         </div>
 
@@ -451,12 +473,12 @@
     <!-- ---------- Aegis Warden ---------- -->
     <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
       <div class="project-body">
-        <div class="project-kicker">Desktop · C# · Windows Forms · v1.1</div>
+        <div class="project-kicker">Desktop · C# · Windows Forms · v1.4</div>
         <h3>Aegis Warden</h3>
         <p class="project-tagline">One click fixes for network and Windows problems, with a log that tells the truth.</p>
         <div class="project-cols">
           <p>
-            I kept fixing the same problems by hand: slow internet, a stuck print queue, a PC that drags. My first version was a PowerShell script with a console menu. Aegis Warden is the same fixes as one .exe with a dashboard, a live log and 32 fixes in clear groups: Networking, Diagnostics, Disk and system, Printing and Tools.
+            I kept fixing the same problems by hand: slow internet, a stuck print queue, a PC that drags. My first version was a PowerShell script with a console menu. Aegis Warden is the same fixes as one .exe with a dashboard, a live log and 78 fixes in clear groups: Networking, System, Printing, Diagnostics, Security, Recovery and Ping &amp; Trace.
           </p>
           <p>
             The log never claims success it did not check. Every run ends as FINISHED, PROBLEMS or STOPPED, and a line with FAILED, ERROR, WARNING or Could not marks the run as PROBLEMS. Each fix asks once before it runs, and Cancel stops the whole process tree.
@@ -475,8 +497,8 @@
         </div>
 
         <ul class="cert-list" style="margin-top:18px;">
-            <li><span class="check">▹</span> 24 plain language Knowledge Base articles explain each problem, with a search box that finds fixes and articles together</li>
-            <li><span class="check">▹</span> Version 1.1 added Network Reset, Wi-Fi Report, Slow PC Check, Ping and Trace and Save Report</li>
+            <li><span class="check">▹</span> 31 plain language Knowledge Base articles explain each problem, with a search box that finds fixes and articles together</li>
+            <li><span class="check">▹</span> Version 1.4 moved to the shared navy and orange Aegis look, and any non-zero exit code is now always reported as a problem</li>
             <li><span class="check">▹</span> Honest limits: the fixes were built and viewed on screen but not yet run on real Windows PCs, and some need administrator rights</li>
         </ul>
 
@@ -508,7 +530,7 @@
     <!-- ---------- Aegis Hephaestus ---------- -->
     <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
       <div class="project-body">
-        <div class="project-kicker">Desktop · C# · .NET 8 · WinForms · v0.22.0</div>
+        <div class="project-kicker">Desktop · C# · .NET 8 · WinForms · v0.23.0</div>
         <h3>Aegis Hephaestus</h3>
         <p class="project-tagline">Android and iPhone repair, forged for everyone, with a log that tells the truth.</p>
         <div class="project-cols">
@@ -532,19 +554,19 @@
 
         <div class="shot-row wide">
           <figure>
-            <picture><source srcset="assets/aegis-hephaestus-dash.webp" type="image/webp"><img src="assets/aegis-hephaestus-dash.jpg" alt="Aegis Hephaestus repair dashboard showing device status, device health score, and repair tools" width="1018" height="772" style="aspect-ratio:1018/772" loading="lazy"></picture>
+            <picture><source srcset="assets/aegis-hephaestus-dash.webp" type="image/webp"><img src="assets/aegis-hephaestus-dash.jpg" alt="Aegis Hephaestus repair dashboard showing device status, device health score, and repair tools" width="1100" height="563" style="aspect-ratio:1100/563" loading="lazy"></picture>
             <figcaption>Dashboard: live status for the device, ADB and Fastboot, and Apple support</figcaption>
           </figure>
           <figure>
-            <picture><source srcset="assets/aegis-hephaestus-android.webp" type="image/webp"><img src="assets/aegis-hephaestus-android.jpg" alt="Aegis Hephaestus Android Repair page with automated diagnosis and reboot actions" width="1024" height="916" style="aspect-ratio:1024/916" loading="lazy"></picture>
+            <picture><source srcset="assets/aegis-hephaestus-android.webp" type="image/webp"><img src="assets/aegis-hephaestus-android.jpg" alt="Aegis Hephaestus Android Repair page with automated diagnosis and reboot actions" width="1100" height="563" style="aspect-ratio:1100/563" loading="lazy"></picture>
             <figcaption>Android Repair: guided diagnose and fix, with reversible reboot actions</figcaption>
           </figure>
         </div>
 
         <ul class="cert-list" style="margin-top:18px;">
             <li><span class="check">▹</span> The log reports only what it actually checked, and each run ends as SAFE, RISKY or SKIPPED</li>
-            <li><span class="check">▹</span> All 7 planned phases built, over 22 version rounds, with 9 rules in the troubleshooting catalog</li>
-            <li><span class="check">▹</span> Honest limits: it has not been compiled and run on a real Windows machine yet, and device testing on my Galaxy S8 test phone is the next step</li>
+            <li><span class="check">▹</span> All 7 planned phases built, over 23 version rounds, with 9 rules in the troubleshooting catalog</li>
+            <li><span class="check">▹</span> Honest limits: it builds and runs on Windows, but it has not been tested with a connected phone yet. My Galaxy S8 test phone is the next step</li>
         </ul>
 
         <details class="tech-details">
