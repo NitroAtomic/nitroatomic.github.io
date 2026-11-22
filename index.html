@@ -698,6 +698,53 @@
       </div>
     </article>
 
+    <!-- ---------- GEO TRACE ---------- -->
+    <article class="project featured reveal" data-category="it-automation" style="margin-top:26px;">
+      <div class="project-body">
+        <div class="project-kicker">Desktop · Python · PySide6 · Tesseract OCR · v5.0</div>
+        <h3>GEO TRACE</h3>
+        <p class="project-tagline">Turn a folder of photos into pins on Google Earth.</p>
+        <div class="project-cols">
+          <p>
+            A Windows app that reads where each photo was taken and saves the pins as a KML file that
+            opens straight in Google Earth Pro, plus a CSV for Excel. It puts the pins in order by time
+            or file name and measures the distance from one pin to the next and the total route, so a
+            field survey of electrical posts becomes a map with distances in a few seconds.
+          </p>
+          <p>
+            It looks for the location in five places, in order: the GPS data inside the photo, XMP data,
+            the file name, coordinates printed on the photo, and last, typing it in by hand. Viber and
+            Messenger strip the GPS data from photos, so for those it reads the printed coordinates with
+            OCR. Everything runs on the computer and nothing is uploaded.
+          </p>
+        </div>
+
+        <div class="shot-row wide">
+          <figure>
+            <picture><source srcset="assets/geotrace-app.webp" type="image/webp"><img src="assets/geotrace-app.jpg" alt="GEO TRACE window after extracting 12 photos, listing each photo with latitude, longitude, time taken, distance from the previous pin and total distance, read from GPS metadata" width="1400" height="880" style="aspect-ratio:1400/880" loading="lazy"></picture>
+            <figcaption>12 photos found, ordered by time, with the distance between pins and a 555.5 m route (sample photos)</figcaption>
+          </figure>
+        </div>
+
+        <ul class="cert-list" style="margin-top:18px;">
+          <li><span class="check">▹</span> Reads printed coordinates in many styles: decimal, labeled, N/E letters and degrees, minutes and seconds</li>
+          <li><span class="check">▹</span> Reads each photo several times and marks it CHECK when the readings do not agree, shown as a yellow star pin in Google Earth</li>
+          <li><span class="check">▹</span> Ships as a Windows installer with OCR built in, and has a protected build compiled to machine code so the source is hard to pull out</li>
+          <li><span class="check">▹</span> Honest limits: distances are straight lines between pins, not along the road, and reading printed text takes a second or two per photo</li>
+        </ul>
+
+        <ul class="tags" style="margin:22px 0 0;">
+          <li>Python</li>
+          <li>PySide6</li>
+          <li>EXIF / XMP</li>
+          <li>Tesseract OCR</li>
+          <li>KML</li>
+          <li>Geolocation</li>
+          <li>Inno Setup</li>
+        </ul>
+      </div>
+    </article>
+
     <!-- ---------- SE Aware ---------- -->
     <article class="project featured reveal" data-category="cybersecurity" style="margin-top:26px;">
       <a class="project-shot" href="https://nitroatomic.github.io/SE-AWARE/index.html" target="_blank" rel="noopener">
