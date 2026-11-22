@@ -72,7 +72,7 @@
     var calmMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // --- stat numbers count up when they scroll into view ---
-    var nums = document.querySelectorAll('.stat .num');
+    var nums = document.querySelectorAll('.stat .num:not(.no-count)');
     if (nums.length && !calmMotion) {
       // Blank them here rather than in the observer callback, so the real value
       // never flashes on screen before the count starts.
