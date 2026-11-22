@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Juan Paolo Dente | IT Support, Networking &amp; Cybersecurity</title>
-<meta name="description" content="IT support professional specializing in troubleshooting, service desk operations and network security. BSIT (Network &amp; Cybersecurity) student at Mapúa Malayan Digital College.">
+<meta name="description" content="IT support professional moving into cybersecurity. I build my own Windows security tools, the Aegis family. BSIT (Network &amp; Cybersecurity) student at Mapúa Malayan Digital College.">
 <link rel="icon" href="assets/favicon.png">
 <link rel="canonical" href="https://nitroatomic.github.io/">
 
 <meta property="og:type" content="profile">
 <meta property="og:url" content="https://nitroatomic.github.io/">
 <meta property="og:title" content="Juan Paolo Dente | IT Support, Networking & Cybersecurity">
-<meta property="og:description" content="IT support professional specializing in troubleshooting, service desk operations and network security. BSIT (Network & Cybersecurity) student at Mapúa Malayan Digital College.">
+<meta property="og:description" content="IT support professional moving into cybersecurity. I build my own Windows security tools, the Aegis family. BSIT (Network & Cybersecurity) student at Mapúa Malayan Digital College.">
 <meta property="og:image" content="https://nitroatomic.github.io/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Juan Paolo Dente | IT Support, Networking & Cybersecurity">
-<meta name="twitter:description" content="IT support professional specializing in troubleshooting, service desk operations and network security.">
+<meta name="twitter:description" content="IT support professional moving into cybersecurity, building my own Windows security tools.">
 <meta name="twitter:image" content="https://nitroatomic.github.io/assets/og-image.jpg">
 
 <script type="application/ld+json">
@@ -28,7 +28,7 @@
   "@type": "Person",
   "name": "Juan Paolo Dente",
   "jobTitle": "IT Support Professional",
-  "description": "IT support professional specializing in troubleshooting, service desk operations and network security.",
+  "description": "IT support professional moving into cybersecurity, building my own Windows security tools.",
   "email": "mailto:paopaodente@gmail.com",
   "url": "https://nitroatomic.github.io/",
   "image": "https://nitroatomic.github.io/assets/juan.png",
@@ -776,93 +776,7 @@
       </div>
     </article>
 
-    <p class="project-group-label" style="margin-top:48px;">Additional projects</p>
-
-    <!-- ---------- AccPH ---------- -->
-    <article class="project featured reveal" data-category="software-development" style="margin-top:18px;">
-      <div class="project-body">
-        <div class="project-kicker">Personal project · Full-stack · Phases 1 to 6 of 7 built</div>
-        <h3>AccPH</h3>
-        <p class="project-tagline">Real books for a Philippine business, not a toy ledger.</p>
-        <div class="project-cols">
-          <p>
-            A Philippine payroll and accounting system, built phase by phase: authentication
-            and six-role RBAC (enforced server-side, not just hidden buttons), employee and
-            attendance management, and a deterministic payroll engine that computes SSS,
-            PhilHealth, Pag-IBIG and BIR withholding tax from versioned government rate
-            tables, never from a model's guess.
-          </p>
-          <p>
-            Approving payroll auto-posts a real double-entry journal entry into a general
-            ledger. Recording a bill or invoice does the same for Accounts Payable and
-            Receivable, and paying one posts a second, separate entry for the cash movement.
-            The Trial Balance is computed live from posted entries only, so &ldquo;Balanced?
-            Yes&rdquo; actually has to be earned.
-          </p>
-        </div>
-
-        <div class="shot-row">
-          <figure>
-            <picture><source srcset="assets/accph-login.webp" type="image/webp"><img src="assets/accph-login.jpg" alt="AccPH login screen with its logo: a gold arrow mark with the Philippine sun and stars, above the tagline AI-Assisted General Accounting: Accurate, Explainable, Trusted" width="429" height="618" style="aspect-ratio:429/618" loading="lazy"></picture>
-            <figcaption>The actual tagline: Accurate &middot; Explainable &middot; Trusted. The design principle behind every choice below.</figcaption>
-          </figure>
-          <figure>
-            <picture><source srcset="assets/accph-dashboard.webp" type="image/webp"><img src="assets/accph-dashboard.jpg" alt="AccPH dashboard showing total income, expenses, net income, a 30-day financial chart, quick actions and recent activity for Dente Trading Co." width="997" height="913" style="aspect-ratio:997/913" loading="lazy"></picture>
-            <figcaption>Compliance alerts, real activity, numbers explicitly marked "Available in Phase X" when they're not real yet</figcaption>
-          </figure>
-          <figure>
-            <picture><source srcset="assets/accph-ledger.webp" type="image/webp"><img src="assets/accph-ledger.jpg" alt="AccPH Chart of Accounts showing asset, liability, equity, revenue and expense accounts with codes and normal balances" width="892" height="817" style="aspect-ratio:892/817" loading="lazy"></picture>
-            <figcaption>The Chart of Accounts Payroll and AP/AR actually post into</figcaption>
-          </figure>
-        </div>
-        <div class="shot-row wide" style="margin-top:16px;">
-          <figure>
-            <picture><source srcset="assets/accph-copilot.webp" type="image/webp"><img src="assets/accph-copilot.jpg" alt="AccPH Accounting Copilot answering questions about unpaid bills, outstanding invoices, trial balance status, recent payroll runs and active employee count, all from real data" width="927" height="819" style="aspect-ratio:927/819" loading="lazy"></picture>
-            <figcaption>The free-tier Copilot: rule-based, not an LLM. Every answer is pulled from real, live data.</figcaption>
-          </figure>
-        </div>
-
-        <details class="tech-details">
-          <summary>Technical details: payroll engine, ledger design, engineering decisions</summary>
-          <div class="code-panel" style="margin-top:16px;">
-            <div class="code-head">payroll calculation engine &middot; a bug caught in live testing</div>
-<pre><code>// A Daily-rate employee's ₱700/day was fed straight into
-// SSS / PhilHealth / Pag-IBIG - all three are legally MONTHLY schemes.
-// A ₱700 "month" was qualifying for near-zero contributions.
-//
-// Fixed: convert to a monthly-equivalent salary first (rate × periods/month),
-// look up the correct bracket, then divide the contribution back down
-// to a per-period share. Monthly employees are unaffected (divisor = 1).</code></pre>
-          </div>
-
-          <ul class="cert-list" style="margin-top:20px;">
-            <li><span class="check">▹</span> Deterministic calculation engine: every peso comes from a versioned
-                rate table in the database, never computed by a model</li>
-            <li><span class="check">▹</span> "View Calculation" on every payroll line: names the exact rate-table row
-                and effective date that produced each number</li>
-            <li><span class="check">▹</span> Real government rates: PhilHealth, Pag-IBIG and BIR withholding cited
-                from primary sources; SSS cross-checked against a cited circular, one
-                transcription error caught and corrected before it shipped</li>
-            <li><span class="check">▹</span> Draft &rarr; Approve and Draft &rarr; Post workflows. The one
-                irreversible step is explicit and logged, everywhere</li>
-            <li><span class="check">▹</span> Free-tier AI honestly labeled as such: OCR receipt scanning with
-                per-field confidence levels, and a rule-based Copilot that says
-                "I don't know" rather than guessing</li>
-          </ul>
-        </details>
-
-        <ul class="tags" style="margin:22px 0 4px;">
-          <li>TypeScript</li>
-          <li>React</li>
-          <li>Node.js / Express</li>
-          <li>PostgreSQL</li>
-          <li>Prisma</li>
-          <li>RBAC</li>
-          <li>Double-entry Accounting</li>
-          <li>Tesseract OCR</li>
-        </ul>
-      </div>
-    </article>
+    <p class="project-group-label" style="margin-top:48px;">Outside security</p>
 
     <!-- ---------- Blessed Chuckles ---------- -->
     <article class="project featured reveal" data-category="software-development" style="margin-top:26px;">
